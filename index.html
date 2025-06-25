@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Map</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.9.4/mapbox-gl.js"></script>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/themes/base/jquery-ui.min.css"
+        integrity="sha512-TFee0335YRJoyiqz8hA8KV3P0tXa5CpRBSoM0Wnkn7JoJx1kaq1yXL/rb8YFpWXkMOjRcv5txv+C6UluttluCQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/jquery-autocomplete/1.0.7/jquery.auto-complete.min.css"
+        integrity="sha512-TfnGOYsHIBHwx3Yg6u6jCWhqz79osu5accjEmw8KYID9zfWChaGyjDCmJIdy9fJjpvl9zXxZamkLam0kc5p/YQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Lexend+Deca:300,400,600');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&display=swap');
+
+        .font_lexend {
+            font-family: "Lexend Deca", sans-serif;
+        }
+
+        .hdng {
+            font-family: "Montserrat", sans-serif;
+            font-weight: bold;
+            font-size: 18px;
+            position: absolute;
+            z-index: 99;
+            top: 20px;
+            left: 20px;
+            color: #35a063;
+            /* max-width: 61%; */
+            /* text-shadow: 0 0 6px #ffffff, 0 0 2px rgba(0, 0, 0, 0.4); */
+            background-color: #11111111;
+            padding: 1px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            /* font-family: "Lexend Deca", sans-serif; */
+            font-family: "Lexend Deca", sans-serif;
+            background-color: #999;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .div_row {
+            margin: 5px;
+            vertical-align: middle;
+        }
+
+        .row_bold {
+
+            font-weight: bold;
+        }
+
+        .rowit {
+
+            font-style: italic;
+        }
+
+        .row_capital {
+            text-transform: capitalize;
+        }
+
+        .searchbar {
+            position: absolute;
+            top: 80px;
+            right: 10px;
+            z-index: 99999;
+        }
+
+        #address {
+            border: 2px solid #2e0d54;
+            padding: 9px;
+            border-radius: 6px;
+            margin-right: 6px;
+            margin-top: 5px;
+            font-size: 15px;
+            min-width: 265px;
+        }
+
+        .ui-menu .ui-menu-item {
+            font-size: 13px;
+        }
+
+        .leftbar {
+            display: inline-block;
+
+            padding: 10px;
+            text-align: left;
+            width: 200px;
+            color: white;
+            max-height: 270px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            vertical-align: top;
+            overflow-x: hidden;
+
+            position: absolute;
+            top: 310px;
+            left: 10px;
+            z-index: 99999;
+
+        }
+
+        .leftbar2 {
+            display: inline-block;
+            margin-top: 60px;
+            padding: 10px;
+
+            text-align: left;
+            width: 200px;
+            color: white;
+            max-height: 290px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            vertical-align: top;
+            overflow-x: hidden;
+
+            position: absolute;
+            top: 52px;
+            left: 10px;
+            z-index: 99999;
+
+        }
+
+        .scroll::-webkit-scrollbar {
+            width: 10px;
+            overflow-x: hidden;
+        }
+
+        .scroll::-webkit-scrollbar-track {
+
+            background-color: #eee;
+            border-radius: 10px;
+        }
+
+        .scroll::-webkit-scrollbar-thumb {
+            background-color: #3fb1ce;
+            background-color: #393280;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            -webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .mypopup {
+            width: 500px;
+            font-family: "Lexend Deca", sans-serif;
+            color: #333;
+        }
+
+        .toplayer {
+            z-index: 9999;
+            position: absolute;
+            top: 50px;
+            left: 20px;
+            background: #ffffff66;
+
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .locname {
+            background: #ffffff77;
+            color: #111;
+
+            background: #55555577;
+            color: #ffffff;
+
+            border-radius: 10px;
+            padding: 5px;
+            padding-left: 9px;
+            padding-right: 9px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        #loadingbar {
+            position: absolute;
+            z-index: 999;
+            padding: 10px;
+            top: 50px;
+            border-radius: 10px;
+            background-color: #ffffff66;
+            color: black;
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+        }
+
+        .credits {
+            padding: 0 4px 0 4px;
+            color: #bbb !important;
+            background-color: #666;
+            border-radius: 6px;
+        }
+
+        .mapboxgl-ctrl-attrib {
+            font-size: 11px;
+        }
+
+        .eventname {
+            font-size: 12px;
+        }
+
+        .homebtn {
+            margin-top: 15px;
+            text-align: right;
+            margin-right: 5px;
+        }
+
+        .mybtn {
+            width: 120px;
+            text-align: center;
+            background-color: white;
+            padding: 8px 19px;
+            border-radius: 8px;
+            color: #3a345c !important;
+            font-size: 14px;
+            font-style: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .mybtnblue {
+
+            color: white !important;
+
+            background: #555555aa;
+
+
+        }
+
+        .jdpopup {
+
+            padding: 0px;
+            padding-right: 0px;
+            text-align: left !important;
+            background: #ffffff;
+            color: #272727;
+            background: linear-gradient(to top right, #1c103e, #47429f);
+            background: linear-gradient(to top right, #32c772, #47429f);
+            color: #ffffff;
+            width: 80%;
+
+            max-height: 100vh;
+            display: none;
+            z-index: 999999;
+            box-shadow: rgba(10, 10, 11, 0.2) 0px 7px 29px 0px;
+
+            max-width: 400px;
+            position: absolute;
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            top: 15px;
+            text-align: center;
+
+        }
+
+        .jdpopup .close {
+            position: absolute;
+            top: 7px;
+            right: 16px;
+            transition: all 200ms;
+            font-size: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #ccc;
+            padding-left: 5px;
+            cursor: pointer;
+        }
+
+        .jdpopup .close:hover {
+            color: #06D85F;
+        }
+
+        .jdpopup_inner {
+            max-height: 95%;
+            text-align: left !important;
+            line-height: 32px;
+            min-height: 80px;
+            padding: 0px;
+            text-align: center !important;
+            text-transform: uppercase;
+            font-size: 14px;
+            overflow-x: hidden;
+        }
+
+        .jdpopup_inner a {
+            color: #2b82cb;
+            color: rgb(5, 99, 193);
+        }
+
+        .popupinnercontent {
+            overflow-y: auto;
+            max-height: 400px;
+            padding: 20px;
+        }
+
+        .row_lbl {
+            display: inline-block;
+            width: 100px;
+
+        }
+
+        .row_val {
+            display: inline-block;
+
+        }
+
+        .dplogo {
+            max-width: 150px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 999;
+            opacity: 0.8;
+        }
+
+        a.mapboxgl-ctrl-logo {
+            opacity: 0.6;
+            scale: 0.9;
+        }
+
+        .divbg {
+            background-repeat: no-repeat;
+            height: 237px;
+            width: 400px;
+            background-size: cover;
+        }
+
+        .divlogo {
+            text-align: center;
+            max-height: 122px;
+            padding-top: 5px;
+        }
+
+        .divlogo img {
+            max-height: 100px;
+            max-width: 350px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
+
+        .pad8 {
+            padding-bottom: 8px;
+            padding-top: 5px;
+        }
+
+        .popup_heading {
+            font-size: 19px;
+            padding-top: 10px;
+        }
+
+        #backtohome {
+            display: none;
+        }
+
+        .div_monthfilter {
+            text-align: right;
+            position: absolute;
+            bottom: 27px;
+            right: 3px;
+            z-index: 9999;
+            background-color: #33333378;
+            text-align: left;
+            padding: 5px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: white;
+
+        }
+
+        #dd_month {
+            padding: 6px;
+            border-radius: 7px;
+            margin-right: 5px;
+            min-width: 120px;
+        }
+
+        #ui-id-1 {
+            z-index: 99999 !important;
+        }
+
+        .custom-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 72px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+            z-index: 9999;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px 0 0;
+            font-family: 'Lexend Deca', sans-serif;
+        }
+
+        .navbar-logo-link {
+            border-right: 1px solid #e1e1e1;
+            display: inline-block;
+            position: relative;
+            height: 100%;
+            padding: 0 36px 0 36px;
+            text-decoration: none;
+            border-bottom: 4px solid transparent;
+            transition: border-bottom 0.2s ease;
+        }
+
+        .navbar-logo-link:hover {
+            border-bottom: 4px solid #35a063;
+        }
+
+        .navbar-logo-link img {
+            height: 36px;
+            margin-top: 18px;
+            margin-bottom: 18px;
+        }
+
+        .viewMarketplaceButton a {
+            background-color: #35a063;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 18px;
+        }
+
+        .desktop-only {
+            display: block;
+        }
+
+        .menu-icon-mobile {
+            display: none;
+        }
+
+        .mobile-menu-panel {
+            display: none;
+            position: fixed;
+            background: white;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            padding: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .mobile-menu-panel.visible {
+            display: block;
+        }
+
+        .mobile-menu-link {
+            color: #35a063;
+            font-size: 18px;
+            text-decoration: none;
+            text-align: left;
+            display: block;
+            margin-top: 80px;
+        }
+
+        .close-mobile-menu {
+            position: absolute;
+            z-index: 100000;
+            top: 16px;
+            right: 24px;
+            font-size: 30px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        @media only screen and (max-width: 680px) {
+
+            .custom-navbar {
+                justify-content: center;
+                padding-left: 0;
+            }
+
+            .navbar-logo-link {
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 0;
+            }
+
+            .desktop-only {
+                display: none;
+            }
+
+            .menu-icon-mobile {
+                display: block;
+                position: absolute;
+                left: 20px;
+                width: 22px;
+                height: 22px;
+                cursor: pointer;
+                z-index: 10001;
+            }
+
+            .navbar-logo-link {
+                border-right: none;
+            }
+
+            .div_monthfilter {
+                height: 186px;
+                overflow-y: auto;
+            }
+
+            .leftbar {
+
+                width: 180px;
+
+                max-height: 200px;
+                bottom: 45px;
+                left: 1px;
+                top: unset;
+
+            }
+
+            .leftbar2 {
+                z-index: 9998;
+                width: 160px;
+                margin-top: 70px;
+                max-height: 210px;
+                bottom: 260px;
+                left: 1px;
+                /*  top: unset; */
+
+            }
+
+            .searchbar {
+                top: 110px;
+                right: 8px;
+                z-index: 9998;
+            }
+
+            #address {
+                min-width: 170px;
+                font-size: 14px;
+                padding: 7px;
+            }
+
+            .divbg {
+                height: 187px;
+                width: 345px;
+            }
+
+            .divlogo {
+                max-height: 102px;
+                padding-top: 5px;
+            }
+
+            .divlogo img {
+                max-height: 80px;
+                max-width: 300px;
+            }
+
+            .hdng {
+                font-size: 16px;
+            }
+
+        }
+
+        @media screen and (min-width: 768px) and (max-width: 768px) and (min-height: 1024px) and (max-height: 1024px) {
+            .searchbar {
+                top: 105px !important;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <!--<img src="logo.png" class='dplogo' />-->
+
+    <div class="custom-navbar">
+        <img src="./menu.svg" class="menu-icon-mobile" onclick="toggleMobileMenu()" />
+
+        <a href="https://kayley-kbg6jb.mysharetribe-test.com" class="navbar-logo-link">
+            <img src="./kayleyLogo.avif" alt="Logo" />
+        </a>
+
+        <div class="viewMarketplaceButton desktop-only" style="margin-right: 24px;">
+            <a href="https://kayley-kbg6jb.mysharetribe-test.com" target="_blank">
+                View Marketplace
+            </a>
+        </div>
+    </div>
+
+    <div id="mobileMenuPanel" class="mobile-menu-panel">
+        <a class="close-mobile-menu" onclick="toggleMobileMenu()" style="margin-right: 48px;">&times;</a>
+        <div class="mobile-menu-content">
+            <a href="https://kayley-kbg6jb.mysharetribe-test.com" class="mobile-menu-link">View Marketplace</a>
+        </div>
+    </div>
+
+    <div class="hdng" style="margin-top: 70px;">Traditional Irish Music Gatherings Around the World</div>
+
+    <div id='jdpopup' class="jdpopup">
+        <a class="close" onclick='hidePopup()'>&times;</a>
+        <div class='jdpopup_inner' id="popupcontent">
+
+
+
+        </div>
+
+    </div>
+
+    <div class='searchbar'>
+
+        <input type="search" tabindex="0" id='address' class="sfa-search__input" value=""
+            placeholder="Search by Festival" required="" minlength="2">
+
+        <div class='homebtn'>
+            <a id='backtohome' class="btn mybtn mybtnblue" onclick="resetMapZoom()">Back to home</a>
+        </div>
+
+    </div>
+    <div class='div_monthfilter scroll'>
+        <!--
+<div><input onclick='selectall(this)' type='checkbox' checked/>Select All</div>
+<div><input class='chkfilters' data-year='Jan' onclick='filter_month_chk(this)' type='checkbox' value='Jan' checked/>Jan</div>
+<div><input class='chkfilters' data-year='Feb' onclick='filter_month_chk(this)' type='checkbox' value='Feb' checked/>Feb</div>
+<div><input class='chkfilters' data-year='March' onclick='filter_month_chk(this)' type='checkbox' value='March' checked/>March</div>
+<div><input class='chkfilters' data-year='April' onclick='filter_month_chk(this)' type='checkbox' value='April' checked/>April</div>
+<div><input class='chkfilters' data-year='May' onclick='filter_month_chk(this)' type='checkbox' value='May' checked/>May</div>
+<div><input class='chkfilters' data-year='June' onclick='filter_month_chk(this)' type='checkbox' value='June' checked/>June</div>
+<div><input class='chkfilters' data-year='July' onclick='filter_month_chk(this)' type='checkbox' value='July' checked/>July</div>
+       -->
+    </div>
+    <div id="map"></div>
+    <div id='loadingbar'>Loading data...</div>
+
+    <div class="leftbar2 scroll">
+
+        <div class='locname' onclick='gotoloc2([53.20487987338145, -7.935320415156126], 5)'>
+            <a class='sidebartitle'><span class='locationtitle'>Ireland</span></a>
+        </div>
+        <div class='locname' onclick='gotoloc2([38.4745355672896, -99.825091128811], 3)'>
+            <a class='sidebartitle'><span class='locationtitle'>United States</span></a>
+        </div>
+
+        <div class='locname' onclick='gotoloc2([50.15044154247169, -100.89265372977606], 2)'>
+            <a class='sidebartitle'><span class='locationtitle'>North America</span></a>
+        </div>
+        <div class='locname' onclick='gotoloc2([51.10925510919528, 16.573850595067725], 3)'>
+            <a class='sidebartitle'><span class='locationtitle'>Europe</span></a>
+        </div>
+
+        <div class='locname' onclick='gotoloc2([30.718113105839222, 99.64335250298365], 2)'>
+            <a class='sidebartitle'><span class='locationtitle'>Asia</span></a>
+        </div>
+
+        <div class='locname' onclick='gotoloc2([27.917996780780307, 44.39316261538226], 3)'>
+            <a class='sidebartitle'><span class='locationtitle'>Middle East</span></a>
+        </div>
+
+
+
+
+
+
+    </div>
+    <div class="leftbar scroll">
+        <!--<div class='logoimg'><img style='max-width:150px;' src='logo.png' /></div>-->
+
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@2.2.4/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.14.1/jquery-ui.min.js"
+        integrity="sha512-MSOo1aY+3pXCOCdGAYoBZ6YGI0aragoQsg1mKKBHXCYPIWxamwOE7Drh+N5CPgGI5SA9IEKJiPjdfqWFWmZtRA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-autocomplete/1.0.7/jquery.auto-complete.min.js"></script>
+
+
+
+    <script>
+
+        var color_land = "#35a063";
+        var color_water = "#0f0b76";
+        var color_water = "#3ea4f0";
+        var color_labels = "#fff";
+
+        var markers_array = [];
+        mapboxgl.accessToken = 'pk.eyJ1Ijoia2F5bGV5bXVzaWMiLCJhIjoiY21id3BkeTBoMDR2ajJqb3FtdHp1MTA5eCJ9.Iy5TzDz4M6ATOI84z1gH6Q';
+        var zoomLevel;
+        var coords_array = [23, 30];
+        var coords_array2 = [-92.4812741035970, 41.18368183914569];
+        var monthsyears = [];
+        var selectedmonths = [];
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            zoom: 2,
+            //center: [ -89.73822103203521, 39.5926664525055],
+            center: coords_array,
+            pitch: 5,
+            bearing: 0,
+            style: 'mapbox://styles/mapbox/satellite-streets-v12',
+            // style: 'mapbox://styles/mapbox/streets-v12',
+            //  style: 'mapbox://styles/mapbox/dark-v10',
+            projection: 'globe',
+            customAttribution:
+                '<a style="padding: 0 2px 0 2px; color:#333333; background-color: #aaa;" target="_blank" href=https://www.mapjay.com/>MapJay.com</a>',
+
+
+
+        });
+
+        var countries = [];
+
+        map.on('style.load', () => {
+
+            map.setFog({
+                'color': 'rgb(186, 210, 235)', // Lower atmosphere
+                'high-color': 'rgb(36, 92, 223)', // Upper atmosphere
+                'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+                'space-color': 'rgb(11, 11, 25)', // Background color
+                'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
+            });
+
+            map.addSource('mapbox-dem', {
+                'type': 'raster-dem',
+                'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+                'tileSize': 512,
+                //'maxzoom': 8
+            });
+            // add the DEM source as a terrain layer with exaggerated height
+            map.setTerrain({ 'source': 'mapbox-dem', 'exaggeration': 6.1 });
+        });
+
+        let show = false; //or true, etc.                   
+
+
+        map.on('style.load', function () {
+            /*
+            map.style.stylesheet.layers.forEach(function(layer) {
+                    if (layer.type === 'symbol') {
+                        map.setLayoutProperty(layer.id,"visibility", show?"visible":"none");
+                    }
+                });
+        
+            */
+            /*
+                map.setPaintProperty('tunnel-primary', 'line-width', 1);
+                map.setPaintProperty('land', 'background-color', color_land);
+                map.setPaintProperty('national-park', 'fill-color', color_land);
+                map.setPaintProperty('landuse', 'fill-color', color_land);
+                    map.setPaintProperty('landcover', 'fill-color', color_land);
+                    //	map.setPaintProperty('landcover', 'fill-color', '#2B2450');
+                    	
+                    map.setPaintProperty('water', 'fill-color', color_water);
+                //	map.setPaintProperty('water-depth', 'fill-color', color_water);
+                	
+                	
+                //	map.setPaintProperty('settlement-major-label', 'text-color', color_labels); // City labels (red)
+            //map.setPaintProperty('settlement-major-label', 'text-halo-color', '#ffffff'); // White stroke around text
+            //map.setPaintProperty('settlement-major-label', 'text-halo-width', 0); // Stroke thickness
+            
+                //	map.setPaintProperty('settlement-minor-label', 'text-color', color_labels); // City labels (red)
+            //map.setPaintProperty('settlement-minor-label', 'text-halo-color', '#ffffff'); // White stroke around text
+            //map.setPaintProperty('settlement-minor-label', 'text-halo-width', 0); // Stroke thickness
+            
+            map.setPaintProperty('country-label', 'text-color', color_labels); // Country labels (blue)
+            map.setPaintProperty('country-label', 'text-halo-color', '#ffffff'); // White stroke
+            map.setPaintProperty('country-label', 'text-halo-width', 0); // Slightly thicker stroke
+            */
+        });
+
+        map.on('load', function () {
+            // Loop through all layers and hide roads
+            map.getStyle().layers.forEach(function (layer) {
+                if (layer['source-layer'] && layer['source-layer'].includes('road')) {
+                    map.setLayoutProperty(layer.id, 'visibility', 'none');
+                }
+            });
+        });
+
+
+        loadData();
+
+        function loadData() {
+            var rand = Math.floor(Math.random() * 100); //to append in csv for no cache.
+            rand = 2;
+            //$("#total_s").html("Loading....");
+            jQuery.ajax({
+                //	url: "schedule2.csv?id=5c",   
+                url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vT0MT5cksoKBSx14Bfbw4MTUu-NYoNoBiU7UOuLVYcQIxyBGgwuWChTvH-pJ6pkkI3pOKoGXTN87tW9/pub?gid=1643753742&single=true&output=csv",
+                async: false,
+                success: function (csvd) {
+                    data_ = csvToArray(csvd);
+                },
+                dataType: "text",
+                complete: function () {
+
+                    createMarkers("all", "all");
+                    $("#loadingbar").hide();
+                    autocomplete1();
+                }
+
+
+            });
+        }
+
+        function createMarkers(year, month) {
+            console.log("create markers");
+            monthsyears = [];
+
+            var pinHtml = "";
+
+            var marker;
+
+            var counter = 0;
+            var lastcolor = '#f1f1f1';
+            var sidebar_elem = "";
+            for (var i = 1; i < data_.length; i++) {
+
+                //	var icon_class_name = "iconall icon_chand";
+                var icon_class_name = "iconall";
+                var icon_sidebarclass_name = "iconall";
+                var iconfound = 0;
+                var videofile = "";
+                if (data_[i][1] == "some") {
+                    icon_class_name = "iconall icon_some";
+                    icon_sidebarclass_name = "icon_some iconsidebar";
+                    iconfound = 1;
+                }
+
+
+
+                var pinHtml = "";
+                //pinHtml += "<div class='pvideo'><video width='100%' height='240' controls  autoplay>";
+                //pinHtml += "<source src='"+videofile+"' type='video/mp4'></video></div>";
+                //pinHtml += "<div class='popuplogo'><img src='"+data_[i][8]+"' /></div>";
+
+                if (data_[i][6] != '') {
+                    pinHtml += "<div class='divlogo'>";
+                    pinHtml += "<img class='logo' src='" + data_[i][6] + "' />";
+                    pinHtml += "</div>";
+                }
+
+                if (data_[i][13] != '') {
+                    //	pinHtml += "<div class='divbg' style='background-image: url("+data_[i][13]+")'>";					
+                    //	pinHtml += "</div>";
+                }
+
+                pinHtml += "<div class='popupinnercontent scroll'>";
+                pinHtml += "<div><div class='popup_heading row_bold'>" + data_[i][0] + "<span class='popupicon'></span></div></div>";
+
+                if (data_[i][1] != '') {
+                    pinHtml += "<div class='row'><div class='rowit row_bold rowlt'>" + data_[i][1] + "</div></div>";
+                }
+                if (data_[i][1] != '') {
+                    pinHtml += "<div class='row'><div class='rowit rowlt'>" + data_[i][3] + "</div></div>";
+                }
+                if (data_[i][4] != '') {
+                    pinHtml += "<div class='row'><div class='rowlt row_capital'>" + data_[i][4] + "</div></div>";
+                }
+                if (data_[i][6] != '') {
+                    //pinHtml += "<div class='row'><div class='rowlt'>"+data_[i][6]+"</div></div>";
+                }
+
+
+
+                if (data_[i][5] != '') //website
+                {
+                    pinHtml += "<div class='row'><div class='pad8 rowlt row_bold'><a class='mybtn' href='" + data_[i][5] + "'>FIND OUT MORE</a></div></div>";
+                }
+                pinHtml += "</div>";
+
+
+                latlng_array = [];
+
+                if (data_[i][2] != '' && typeof data_[i][2] != 'undefined') {
+                    if (isValidCoordinate(data_[i][2])) {
+
+                        var obj = new Object();
+                        //	obj.year = data_[i][0];
+                        obj.month = data_[i][3];
+                        obj.label = data_[i][3]; //data_[i][0]+" - "+data_[i][1];
+
+                        //monthsyears.push(obj);
+
+
+
+
+                        //if(( month == data_[i][3]) || year == "all")
+                        {
+
+                            latlng_array = data_[i][2].split(",");
+                            //var lat = parseFloat(latlng_array[0]);
+                            //var lng = parseFloat(latlng_array[1]);
+                            //latlng_array = [lng, lat];
+                            latlng_array.reverse();
+                            console.log(latlng_array);
+
+
+                            //counter++;
+                            datelabel = data_[i][3];
+
+                            const popup = new mapboxgl.Popup({ offset: 10, className: 'mypopup', anchor: 'bottom', maxWidth: '350px', autoPan: true }).setHTML(pinHtml);
+                            //popup.setMaxWidth("400px");
+
+                            counter = i;
+
+
+
+                            el = document.createElement('div');
+                            el.className = icon_class_name;
+                            el.index = counter;
+                            el.pinHtml = pinHtml;
+                            //	 el.innerHTML = counter;
+                            el.latlng_array = latlng_array;
+                            el.addEventListener('click', function (e) {
+                                $('.mapboxgl-popup').remove();
+                                e.stopPropagation();
+                                map.setCenter(map.getCenter());
+
+                                ltlng = e.target.latlng_array;
+
+
+                                //$(".leftbar").html(e.target.pinHtml);
+                                setTimeout(function () {
+                                    //$('video').trigger('play');
+                                }, 200);
+
+
+                                map.flyTo({
+
+                                    center: ltlng, //e.target.latlng_array,
+                                    offset: [2, 15],
+                                    //zoom: 12, 
+                                    duration: zoom_duration,
+                                    essential: true
+
+                                });
+
+                                setTimeout(function () {
+
+                                    if (!popup.isOpen()) {
+                                        //map.setCenter(map.getCenter());
+                                        //popup.setLngLat(map.getCenter());
+                                        popup.addTo(map);
+
+                                    } else {
+                                        popup.remove();
+                                    }
+
+
+                                }, zoom_duration + 5);
+
+
+                            });
+
+
+
+
+                            var markerColor = "red";
+
+
+                            if (iconfound) {
+                                marker1 = new mapboxgl.Marker(el);
+                            }
+                            else {
+                                console.log("s");
+                                marker1 = new mapboxgl.Marker({ "color": "#00E68C", "scale": "0.9" })
+                                //marker1 = new mapboxgl.Marker({  "scale":"0.9" }) 
+                            }
+                            //marker1 = new mapboxgl.Marker({ "color": "#00E68C", "scale":"0.9" }) 
+                            marker1.setLngLat(latlng_array)
+                            marker1.addTo(map);
+
+                            //if(isMobile())
+                            {
+                                //marker1.setPopup(popup);
+                            }
+
+
+                            marker1.counter = counter;
+                            marker1.popup = popup;
+                            marker1.datelabel = datelabel;
+                            marker1.latlng_array = latlng_array;
+                            marker1.getElement().dataset.pinHtml = pinHtml;
+                            marker1.pinHtml = pinHtml;
+
+                            sidebar_elem += "<div id='sideelem_" + counter + "' class='locname' onclick='gotothisloc(" + counter + ")'>";
+
+                            //	sidebar_elem += "<span class='icon_pin'>"+counter+"</span>";
+                            sidebar_elem += "<span class='" + icon_sidebarclass_name + "'></span>";
+                            sidebar_elem += "<a class='sidebartitle' ><span class='locationtitle'>" + data_[i][0] + "-" + data_[i][1].substring(0, 3) + "-" + data_[i][2] + "<div class='eventname'>" + data_[i][3] + "</div></span></a>";
+
+
+
+                            sidebar_elem += "</div>";
+
+                            marker1.getElement().addEventListener('click', function () {
+
+                                //console.log(this.pinHtml);
+                                //e.target.dataset.pinHtml
+                                //$('.mapboxgl-popup').remove();
+                                //document.querySelectorAll('.mapboxgl-popup').forEach(popup => popup.remove());
+                                //e.stopPropagation();
+                                $(".jdpopup").show();
+                                $('#popupcontent').html(this.pinHtml);
+
+                            }.bind(marker1));
+
+
+                            markers_array.push(marker1);
+                        }
+
+
+
+                        if (typeof sidebar_elem != 'undefined') {
+                            //$(".leftbar").html(sidebar_elem);
+
+                        }
+
+                    }
+                } //end filter if.
+
+
+
+            }
+
+            var obj = new Object();
+            //obj.year = data_[i][0];
+            obj.month = "Jan";
+            obj.label = "Jan";
+            monthsyears.push(obj);
+
+            var obj = new Object();
+            obj.month = "Feb";
+            obj.label = "Feb";
+            monthsyears.push(obj);
+
+            var obj = new Object();
+            obj.month = "March";
+            obj.label = "March";
+            monthsyears.push(obj);
+
+            var obj = new Object();
+            obj.month = "April";
+            obj.label = "April";
+            monthsyears.push(obj);
+
+            var obj = new Object();
+            obj.month = "May";
+            obj.label = "May";
+            monthsyears.push(obj);
+
+            var obj = new Object();
+            obj.month = "June";
+            obj.label = "June";
+            monthsyears.push(obj);
+
+            var obj = new Object();
+            obj.month = "July";
+            obj.label = "July";
+            monthsyears.push(obj);
+
+            var obj = new Object();
+            obj.month = "Aug";
+            obj.label = "Aug";
+            monthsyears.push(obj);
+
+
+            var obj = new Object();
+            obj.month = "Sept";
+            obj.label = "Sept";
+            monthsyears.push(obj);
+
+            var obj = new Object();
+            obj.month = "Oct";
+            obj.label = "Oct";
+            monthsyears.push(obj);
+
+            var obj = new Object();
+            obj.month = "Nov";
+            obj.label = "Nov";
+            monthsyears.push(obj);
+
+            var obj = new Object();
+            obj.month = "Dec";
+            obj.label = "Dec";
+            monthsyears.push(obj);
+
+
+
+            monthsyears = [...new Map(monthsyears.map(obj => [obj.label, obj])).values()];
+
+
+
+
+            var monthfilterhtml = "<div><input onclick='selectall(this)' type='checkbox' checked/>Select All</div>";
+
+            for (var i = 0; i < monthsyears.length; i++) {
+                monthfilterhtml += "<div><input class='chkfilters'  onclick='filter_month_chk(this)' type='checkbox' value='" + monthsyears[i].label + "' checked/>" + monthsyears[i].label + "</div>";
+                selectedmonths.push(monthsyears[i].label); //default all selected.
+            }
+
+            $(".div_monthfilter").html(monthfilterhtml);
+
+
+
+            //$(".leftbar").html(sidebar_c);
+
+
+        }
+
+
+        function selectall(source) {
+            const checkboxes = document.querySelectorAll('.chkfilters');
+            checkboxes.forEach((cb) => {
+                cb.checked = source.checked;
+                filter_month_chk(cb); // trigger the individual checkbox logic
+            });
+        }
+
+
+
+        function isValidCoordinate(coord) {
+            const regex = /^\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*$/;
+            return regex.test(coord);
+        }
+
+
+        function filterMarkersByDate(selected_dates) {
+            // Normalize selected months for case-insensitive match
+            const selectedMonths = selected_dates.map(month => month.toLowerCase());
+
+            markers_array.forEach(marker => {
+                const label = marker.datelabel.toLowerCase(); // normalize marker label
+
+                // Check if any month in selectedMonths is included in the label
+                const matchFound = selectedMonths.some(month => label.includes(month));
+
+                if (matchFound) {
+                    marker.getElement().style.display = "block"; // Show marker
+                    console.log("Show: " + marker.datelabel);
+                } else {
+                    marker.getElement().style.display = "none";  // Hide marker
+                }
+            });
+        }
+
+
+
+
+        function filter_month_chk(e) {
+            //	console.log(e.checked);
+            label = e.value;
+            console.log(label);
+            //  year = e.dataset.year;
+            //console.log(year);
+
+            if (e.checked) {
+                selectedmonths.push(label);
+                filterMarkersByDate(selectedmonths);
+
+            }
+            else {
+                let index = selectedmonths.indexOf(label);
+                if (index !== -1) {
+                    selectedmonths.splice(index, 1);
+                }
+                filterMarkersByDate(selectedmonths);
+
+            }
+
+
+        }
+
+        function filter_month(label) {
+
+            var selecteddate;
+            for (var i = 0; i < monthsyears.length; i++) {
+
+                if (label == monthsyears[i].label) {
+                    selecteddate = monthsyears[i];
+                }
+
+            }
+
+            removeAllMarkers();
+
+            if (label == "Show all events") {
+                createMarkers("all", "all");
+            }
+            else {
+                createMarkers(selecteddate.year, selecteddate.month);
+            }
+
+        }
+
+        function csvToArray(text) {
+            let p = '', row = [''], ret = [row], i = 0, r = 0, s = !0, l;
+            for (l of text) {
+                if ('"' === l) {
+                    if (s && l === p) row[i] += l;
+                    s = !s;
+                } else if (',' === l && s) l = row[++i] = '';
+                else if ('\n' === l && s) {
+                    if ('\r' === p) row[i] = row[i].slice(0, -1);
+                    row = ret[++r] = [l = '']; i = 0;
+                } else row[i] += l;
+                p = l;
+            }
+            return ret;
+        };
+
+        map.on("move", function () {
+            // console.log("Current Zoom Level:", map.getZoom());
+        });
+
+        /*
+        map.on('zoom', function () {
+            zoomLevel = map.getZoom(); // Get current zoom level
+           console.log("Zoom LevelA:", zoomLevel);
+        
+            if (zoomLevel >= 2.5 || zoomLevel < 1.9) {
+                $("#backtohome").show();
+            } 
+        });
+        */
+
+        function removeAllMarkers() {
+            for (var i = 0; i < markers_array.length; i++) {
+                markers_array[i].remove();
+            }
+            markers_array = [];
+        }
+
+
+
+
+        map.on('zoomend', function () {
+            myCallbackFunction();
+        });
+
+        map.once('moveend', function () {
+            //console.log("FlyTo animation completed!");
+            myCallbackFunction(); // Call your function here
+        });
+
+        function myCallbackFunction() {
+            zoomLevel = map.getZoom(); // Get current zoom level
+            console.log("Zoom Level:", zoomLevel);
+
+            if (zoomLevel >= 2.5 || zoomLevel < 1.9) {
+                //   map.setLayoutProperty('my-layer', 'visibility', 'visible');  // Show layer
+                $("#backtohome").show();
+            } else {
+                //   map.setLayoutProperty('my-layer', 'visibility', 'none');  // Hide layer
+                $("#backtohome").hide();
+            }
+        }
+
+        function resetMapZoom() {
+            map.flyTo({ center: coords_array, zoom: 2, duration: 1000, essential: true });
+            $("#backtohome").hide();
+        }
+        function gotoloc(lat, lng) {
+
+            map.flyTo({ center: [lng, lat], zoom: 5, duration: 1000, essential: true });
+            $("#backtohome").show();
+        }
+        function gotolocZoom(lat, lng, zoom) {
+
+            map.flyTo({ center: [lng, lat], zoom: zoom, duration: 1000, essential: true });
+            $("#backtohome").show();
+        }
+        function gotoloc2(coords, zoom) {
+            coords.reverse();
+            map.flyTo({ center: coords, zoom: zoom, duration: 1000, essential: true });
+            $("#backtohome").show();
+        }
+
+        function gotothisloc(marker_counter) {
+
+            for (var i = 0; i < markers_array.length; i++) {
+
+                markers_array[i].popup.remove();
+                if (markers_array[i].counter == marker_counter) {
+
+
+                    var thisloc = markers_array[i].getLngLat();
+                    map.flyTo({ center: thisloc, zoom: 9, duration: 1000, essential: true });
+
+                    //markers_array[i].openPopup();
+
+                    $(".jdpopup").show();
+                    $('#popupcontent').html(markers_array[i].pinHtml);
+
+                    //markers_array[i].popup.addTo(map);
+
+
+                }
+
+            }
+
+
+        }
+
+        function hidePopup() {
+
+            document.getElementById('jdpopup').style.display = 'none';
+        }
+
+
+        function autocomplete1() {
+            var minlen = 2;
+            //populate Search_array based on radio btn selected
+            search_array = [];
+            //var checked = document.querySelector('input[name = "searchby"]:checked');
+            //if(checked.value == "name")
+            {
+                console.log("name btn selected");
+                for (var i = 0; i < data_.length; i++) {
+                    var latlng_array = [];
+                    if (data_[i][2] != '' && typeof data_[i][2] != 'undefined')// && typeof data_[i][7] != 'undefined')
+                    {
+                        //console.log( data_[i][3]);
+                        latlng_array = data_[i][2].split(","); //[data_[i][7], data_[i][8]]; 
+                        //latlng_array.reverse();	
+                        var obj = { label: data_[i][0], value: latlng_array, counter: i };
+                        search_array.push(obj);
+                    }
+
+                }
+                //make search_array unique:
+                //search_array = [...new Set(search_array.map(item => item.label))];  //only returns single value not object. 
+                //	search_array = [...new Map(search_array.map(item => [item['label'], item])).values()];
+                minlen = 1;
+            }
+
+            //console.log(search_array);
+            // end populate search array.
+
+
+            $("#address").autocomplete({
+
+                source: search_array,
+                minLength: minlen,
+                select: function (event, ui) {
+                    event.preventDefault();
+
+
+                    $("#address").val(ui.item.label);
+                    //  console.log(ui.item.value);
+                    var latlng = ui.item.value;
+                    var counter = ui.item.counter;
+
+                    var tempdata = { lat: latlng[0], lng: latlng[1] }
+
+                    //map.flyTo({center:tempdata, zoom: 18, duration: 1000, essential: true});
+                    gotothisloc(counter);
+
+
+
+                }
+            });
+        }
+
+        function toggleMobileMenu() {
+            const panel = document.getElementById('mobileMenuPanel');
+            panel.classList.toggle('visible');
+        }
+
+    </script>
+
+</body>
+
+</html>
