@@ -435,19 +435,37 @@
             margin-bottom: 18px;
         }
 
-        .viewMarketplaceButton a {
-            background-color: #35a063;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            line-height: 18px;
+        .top-links {
+            display: flex;
+            margin-right: 24px;
+            gap: 24px;
         }
 
         .desktop-only {
             display: block;
+        }
+
+        .greenLink {
+            margin-right: 24px;
+            color: #3fc374;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .greenLink:hover {
+            color: #35a063;
+        }
+
+        .grayLink {
+            color: #4a4a4f;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .grayLink:hover {
+            color: #1a1a1a;
         }
 
         .menu-icon-mobile {
@@ -479,6 +497,15 @@
             text-align: left;
             display: block;
             margin-top: 80px;
+        }
+
+        .mobile-menu-link2 {
+            color: #4a4a4f;
+            font-size: 18px;
+            text-decoration: none;
+            text-align: left;
+            display: block;
+            margin-top: 15px;
         }
 
         .close-mobile-menu {
@@ -601,9 +628,12 @@
             <img src="./kayleyLogo.avif" alt="Logo" />
         </a>
 
-        <div class="viewMarketplaceButton desktop-only" style="margin-right: 24px;">
-            <a href="https://kayley-kbg6jb.mysharetribe-test.com" target="_blank">
-                View Marketplace
+        <div class="desktop-only top-links">
+            <a href="https://kayley.io/s" class="greenLink">
+                Learn an Irish instrument
+            </a>
+            <a href="https://kayley.io/p/about" class="grayLink">
+                About Kayley
             </a>
         </div>
     </div>
@@ -611,7 +641,8 @@
     <div id="mobileMenuPanel" class="mobile-menu-panel">
         <a class="close-mobile-menu" onclick="toggleMobileMenu()" style="margin-right: 48px;">&times;</a>
         <div class="mobile-menu-content">
-            <a href="https://kayley-kbg6jb.mysharetribe-test.com" class="mobile-menu-link">View Marketplace</a>
+            <a href="https://kayley.io/s" class="mobile-menu-link">Learn an Irish instrument</a>
+            <a href="https://kayley.io/p/about" class="mobile-menu-link2">About Kayley</a>
         </div>
     </div>
 
@@ -722,8 +753,8 @@
             // style: 'mapbox://styles/mapbox/streets-v12',
             //  style: 'mapbox://styles/mapbox/dark-v10',
             projection: 'globe',
-            customAttribution:
-                '<a style="padding: 0 2px 0 2px; color:#333333; background-color: #aaa;" target="_blank" href=https://www.mapjay.com/>MapJay.com</a>',
+            // customAttribution:
+            //     '<a style="padding: 0 2px 0 2px; color:#333333; background-color: #aaa;" target="_blank" href=https://www.mapjay.com/>MapJay.com</a>',
 
 
 
